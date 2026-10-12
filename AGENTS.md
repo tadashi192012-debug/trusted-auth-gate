@@ -8,3 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- CAPTCHA verification runs in a TanStack server function (src/lib/captcha.functions.ts), not a Supabase Edge Function — the stack uses createServerFn for server logic.
+- reCAPTCHA keys live in server secrets (RECAPTCHA_SITE_KEY, RECAPTCHA_SECRET_KEY); the site key is served to the browser via a server function so no code edit is needed when keys change.
+- Rate limiting and single-use token tracking use service-role-only tables with RLS and no policies.

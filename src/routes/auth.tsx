@@ -46,14 +46,14 @@ declare global {
 
 type CaptchaState = "loading" | "ready" | "verifying" | "verified" | "error";
 
-const REASONS: Record<string, string> = {
+const REASONS = {
   rate_limited: "Too many attempts. Please wait a few minutes and try again.",
   invalid: "We couldn't verify the CAPTCHA. Please try again.",
   expired: "The verification expired. Please check the box again.",
   reused: "That verification was already used. Please check the box again.",
   config: "Verification isn't configured correctly yet. Please contact the site owner.",
   unavailable: "Verification service is unavailable. Please try again shortly.",
-};
+} as const;
 
 const VERIFIED_TTL_MS = 90_000;
 
@@ -133,7 +133,7 @@ function AuthPage() {
                 }, VERIFIED_TTL_MS);
               } else {
                 setCaptcha("ready");
-                setError(REASONS[res.reason] ?? REASONS.invalid);
+                setError(REASONS[res.reason]);
                 resetWidget();
               }
             } catch {

@@ -14,13 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      captcha_attempts: {
+        Row: {
+          client_key: string
+          created_at: string
+          id: number
+        }
+        Insert: {
+          client_key: string
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          client_key?: string
+          created_at?: string
+          id?: number
+        }
+        Relationships: []
+      }
+      captcha_used_tokens: {
+        Row: {
+          token_hash: string
+          used_at: string
+        }
+        Insert: {
+          token_hash: string
+          used_at?: string
+        }
+        Update: {
+          token_hash?: string
+          used_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      captcha_rate_check: {
+        Args: { _key: string; _max: number; _window_seconds: number }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

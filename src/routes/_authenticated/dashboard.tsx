@@ -6,10 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Keystone" },
-      { name: "description", content: "Your signed-in Keystone account." },
-      { property: "og:title", content: "Dashboard — Keystone" },
-      { property: "og:description", content: "Your signed-in Keystone account." },
+      { title: "Dashboard" },
+      { name: "description", content: "Your signed-in account." },
+      { property: "og:title", content: "Dashboard" },
+      { property: "og:description", content: "Your signed-in account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -36,7 +36,7 @@ function Dashboard() {
     <main className="auth-canvas min-h-screen px-4 py-10">
       <div className="mx-auto max-w-2xl">
         <header className="flex items-center justify-between">
-          <span className="font-display text-xl">Keystone</span>
+          <span className="font-display text-xl">Account</span>
           <button onClick={signOut} disabled={busy} className="btn-outline">
             {busy ? "Signing out…" : "Sign out"}
           </button>

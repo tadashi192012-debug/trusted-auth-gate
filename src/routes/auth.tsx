@@ -22,9 +22,9 @@ export const Route = createFileRoute("/auth")({
   validateSearch: z.object({ next: z.string().optional() }),
   head: () => ({
     meta: [
-      { title: "Sign in — Keystone" },
+      { title: "Sign in" },
       { name: "description", content: "Verify you're human, then continue with Google." },
-      { property: "og:title", content: "Sign in — Keystone" },
+      { property: "og:title", content: "Sign in" },
       { property: "og:description", content: "Verify you're human, then continue with Google." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -208,9 +208,6 @@ function AuthPage() {
   return (
     <main className="auth-canvas grid min-h-screen place-items-center px-4 py-10">
       <div className="w-full max-w-[420px]">
-        <div className="mb-8 text-center">
-          <span className="font-display text-2xl tracking-tight">Keystone</span>
-        </div>
         <section className="panel p-7 sm:p-9" aria-labelledby="signin-title">
           <h1 id="signin-title" className="font-display text-3xl leading-tight">
             Sign in

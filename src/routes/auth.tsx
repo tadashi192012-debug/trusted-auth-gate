@@ -9,12 +9,12 @@ import { getCaptchaSiteKey, verifyCaptcha } from "@/lib/captcha.functions";
 const NEXT_KEY = "auth:next";
 
 // Only same-origin relative paths are accepted as post-login destinations.
-function safeNext(v: unknown): string {
-  if (typeof v !== "string") return "/dashboard";
-  if (!v.startsWith("/") || v.startsWith("//") || v.startsWith("/\\") || v.startsWith("/auth")) {
+function safeNext(destination: unknown): string {
+  if (typeof destination !== "string") return "/dashboard";
+  if (!destination.startsWith("/") || destination.startsWith("//") || destination.startsWith("/\\") || destination.startsWith("/auth")) {
     return "/dashboard";
   }
-  return v;
+  return destination;
 }
 
 export const Route = createFileRoute("/auth")({
@@ -86,21 +86,21 @@ function AuthPage() {
       navigate({ to: next, replace: true });
     };
     supabase.auth.getUser().then(({ data }) => data.user && goNext());
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") goNext();
     });
 
     // OAuth errors returned via URL (e.g. user cancelled consent).
     const params = new URLSearchParams(window.location.search + "&" + window.location.hash.slice(1));
-    const desc = params.get("error_description") ?? params.get("error");
-    if (desc) {
+    const description = params.get("error_description") ?? params.get("error");
+    if (description) {
       setError(
-        /denied|cancel/i.test(desc)
+        /denied|cancel/i.test(description)
           ? "Google sign-in was cancelled. You can try again whenever you're ready."
-          : `Sign-in failed: ${desc.replace(/\+/g, " ")}`,
+          : `Sign-in failed: ${description.replace(/\+/g, " ")}`,
       );
     }
-    return () => sub.subscription.unsubscribe();
+    return () => authListener.subscription.unsubscribe();
   }, [navigate, search.next]);
 
   // Load and render reCAPTCHA v2 checkbox (supports image challenges natively).
@@ -156,16 +156,16 @@ function AuthPage() {
       if (window.grecaptcha?.render) return render();
       window.__onRecaptchaLoad = render;
       if (!document.getElementById("recaptcha-script")) {
-        const s = document.createElement("script");
-        s.id = "recaptcha-script";
-        s.src = "https://www.google.com/recaptcha/api.js?onload=__onRecaptchaLoad&render=explicit";
-        s.async = true;
-        s.defer = true;
-        s.onerror = () => {
+        const script = document.createElement("script");
+        script.id = "recaptcha-script";
+        script.src = "https://www.google.com/recaptcha/api.js?onload=__onRecaptchaLoad&render=explicit";
+        script.async = true;
+        script.defer = true;
+        script.onerror = () => {
           setCaptcha("error");
           setError("reCAPTCHA couldn't load. Check your connection and retry.");
         };
-        document.head.appendChild(s);
+        document.head.appendChild(script);
       }
     })();
     return () => {
@@ -194,7 +194,6 @@ function AuthPage() {
       setCaptcha("ready");
       resetWidget();
     }
-    // On success, onAuthStateChange navigates.
   }
 
   const statusText: Record<CaptchaState, string> = {
@@ -206,19 +205,19 @@ function AuthPage() {
   };
 
   return (
-    <main className="auth-canvas grid min-h-screen place-items-center px-4 py-10">
-      <div className="w-full max-w-[420px]">
-        <section className="panel p-7 sm:p-9" aria-labelledby="signin-title">
+    <main className="auth-canvas grid min-h-svh place-items-center px-3 py-8 sm:px-4 sm:py-10">
+      <div className="min-w-0 w-full max-w-[420px]">
+        <section className="panel p-4 min-[360px]:p-6 sm:p-9" aria-labelledby="signin-title">
           <h1 id="signin-title" className="font-display text-3xl leading-tight">
             Sign in
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             First confirm you're human, then continue with your Google account.
           </p>
 
           <ol className="mt-8 space-y-6">
             <li>
-              <StepLabel n={1} done={captcha === "verified"}>
+              <StepLabel number={1} done={captcha === "verified"}>
                 Verify
               </StepLabel>
               <div className="mt-3 min-h-[78px] overflow-x-auto">
@@ -237,7 +236,7 @@ function AuthPage() {
               </p>
             </li>
             <li>
-              <StepLabel n={2} done={false}>
+              <StepLabel number={2} done={false}>
                 Continue
               </StepLabel>
               <button
@@ -247,7 +246,7 @@ function AuthPage() {
                 className="gsi-button mt-3"
                 aria-describedby="gsi-hint"
               >
-                {signingIn ? <span className="spinner" aria-hidden /> : <GoogleG />}
+                {signingIn ? <span className="spinner" aria-hidden /> : <GoogleIcon />}
                 <span>{signingIn ? "Opening Google…" : "Sign in with Google"}</span>
               </button>
               <p id="gsi-hint" className="sr-only">
@@ -272,7 +271,7 @@ function AuthPage() {
             </div>
           )}
         </section>
-        <p className="mt-6 text-center text-xs text-muted-foreground">
+        <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground">
           Protected by reCAPTCHA. Google{" "}
           <a className="underline" href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
             Privacy
@@ -288,18 +287,18 @@ function AuthPage() {
   );
 }
 
-function StepLabel({ n, done, children }: { n: number; done: boolean; children: React.ReactNode }) {
+function StepLabel({ number, done, children }: { number: number; done: boolean; children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3 text-sm font-medium">
       <span className={`step-dot ${done ? "step-dot-done" : ""}`} aria-hidden>
-        {done ? "✓" : n}
+        {done ? "✓" : number}
       </span>
       {children}
     </div>
   );
 }
 
-function GoogleG() {
+function GoogleIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden>
       <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />

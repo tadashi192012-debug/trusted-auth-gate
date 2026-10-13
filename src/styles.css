@@ -52,7 +52,7 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
   --color-success: var(--success);
-  --font-display: "Fraunces", Georgia, serif;
+  --font-display: "Manrope", system-ui, sans-serif;
   --font-sans: "Manrope", system-ui, sans-serif;
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -65,7 +65,7 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.5rem;
   --background: oklch(0.975 0.006 85);
   --foreground: oklch(0.22 0.02 160);
   --card: oklch(0.995 0.003 85);
@@ -103,7 +103,11 @@
   --gsi-bg: oklch(1 0 0);
   --gsi-fg: oklch(0.25 0.005 260);
   --gsi-border: oklch(0.55 0.01 260);
-  --shadow-panel: 0 1px 2px oklch(0.2 0.02 160 / 6%), 0 12px 40px -12px oklch(0.2 0.02 160 / 18%);
+  --shadow-panel: 0 2px 8px oklch(0.2 0.02 160 / 6%);
+  --gsi-hover: oklch(0.97 0.005 260);
+  --shadow-gsi-hover: 0 1px 3px oklch(0.2 0 0 / 15%);
+  --alert-border: oklch(0.55 0.2 27 / 30%);
+  --alert-background: oklch(0.55 0.2 27 / 7%);
 }
 
 .dark {
@@ -157,18 +161,16 @@
   :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 }
 
-@utility font-display { font-family: var(--font-display); font-weight: 500; }
+@utility font-display { font-family: var(--font-display); font-weight: 600; }
 
 @layer components {
   .auth-canvas {
-    background:
-      radial-gradient(60rem 30rem at 50% -10%, oklch(0.92 0.03 150 / 60%), transparent 70%),
-      var(--background);
+    background: var(--background);
   }
   .panel {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: calc(var(--radius) + 6px);
+    border-radius: var(--radius);
     box-shadow: var(--shadow-panel);
   }
   .step-dot {
@@ -185,7 +187,7 @@
     font-family: "Roboto", var(--font-sans); font-weight: 500; font-size: 14px;
     transition: background-color 150ms, box-shadow 150ms;
   }
-  .gsi-button:hover:not(:disabled) { background: oklch(0.97 0.005 260); box-shadow: 0 1px 3px oklch(0.2 0 0 / 15%); }
+  .gsi-button:hover:not(:disabled) { background: var(--gsi-hover); box-shadow: var(--shadow-gsi-hover); }
   .gsi-button:disabled { opacity: 0.45; cursor: not-allowed; }
   .btn-outline {
     border: 1px solid var(--border); border-radius: var(--radius); padding: 0.5rem 1rem;
@@ -193,8 +195,8 @@
   }
   .btn-outline:hover:not(:disabled) { background: var(--muted); }
   .alert {
-    border: 1px solid oklch(0.55 0.2 27 / 30%); background: oklch(0.55 0.2 27 / 7%);
-    color: var(--destructive); border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 0.875rem;
+    border: 1px solid var(--alert-border); background: var(--alert-background);
+    color: var(--destructive); border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 0.875rem; line-height: 1.5;
   }
   .skeleton { border-radius: 4px; background: var(--muted); }
   .spinner {
